@@ -1,0 +1,18 @@
+Professor: Gloria Washington
+Department: Computer Science
+Course(s) mentioned: General CS courses (specific course codes not listed in reviews)
+Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2084505
+
+Students described the course as: Reviews are sharply divided. Several reviewers describe her as one of the worst professors in the department and advise avoiding her if possible, while at least one reviewer describes her as a great teacher overall.
+
+The professor's teaching style was described as: Negative reviews report unclear instructions and describe her as difficult to have a civil conversation with. The one detailed positive review describes her as fair, with frequent pop quizzes that were sometimes predictable and not especially difficult.
+
+Workload: The positive review mentions frequent pop quizzes as part of the course structure.
+
+Exams: Not consistently detailed across reviews.
+
+Assignments: The positive review notes generous extra credit opportunities, enough to meaningfully raise a student's grade if needed.
+
+Attendance: Not consistently detailed across reviews.
+
+Other comments: This professor is a clear example of conflicting student opinion in the dataset - retrieval and generation for this professor should surface both perspectives rather than resolving them into a single verdict.

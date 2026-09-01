@@ -1,0 +1,18 @@
+Professor: Noha Hazzazi
+Department: Computer Science
+Course(s) mentioned: CSCI120
+Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2418869 (also mirrored at ratemyprofessors.com/ShowRatings.jsp?tid=2418869)
+
+Students described the course as: Mixed. Several reviewers say she is fair and highly available outside of class, always responding when reached out to. A CSCI120-specific review from Nov 2024 describes the course as feeling like a "waste of time," structured mostly around a repeating sequence of guest speakers rather than direct instruction, comparing it to a freshman seminar.
+
+The professor's teaching style was described as: Reviewers describe her as approachable and responsive to student outreach. However, the CSCI120 review reports that exams covered topics that were barely addressed in class, leaving students underprepared despite labs and assignments being described as fine on their own.
+
+Workload: Attendance is mandatory in at least one course section, with frequent, unpredictable pop quizzes.
+
+Exams: One reviewer specifically warns that exam content did not match what was emphasized during the semester.
+
+Assignments: One large group project structure is mentioned for CSCI120, alongside frequent smaller pop quizzes.
+
+Attendance: Mandatory in at least one section; reviewers say missing class makes passing very unlikely.
+
+Other comments: One reviewer notes that students giving very positive reviews tended to have received B or C grades, implying reviewer sentiment doesn't map cleanly to strong performance in the course. Academic integrity is enforced strictly - one review notes cheating results in a zero.

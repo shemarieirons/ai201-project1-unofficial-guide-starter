@@ -1,0 +1,13 @@
+Source Type: Student newspaper article (The Hilltop)
+Title: Students report unassigned professors, classrooms in first week of classes
+Source: https://thehilltoponline.com/2024/08/26/bisonhub-sparks-confusion-amid-the-first-week-of-classes/
+Date: August 26, 2024
+
+Summary of reported information:
+Multiple students reported starting the Fall semester with courses that had no assigned professor or with classroom/meeting times that changed unexpectedly. Garrison Andrews, a freshman political science major, noticed a missing professor and a changed meeting time for a registered course, though the issue was resolved before the first day of classes.
+
+Sanaiya Hammond, a junior math major, reported a longer resolution process - her missing professor issue wasn't resolved until she had visited the Solutions Hub in the Wayne A.I. Frederick Undergraduate Library three separate times.
+
+Dr. Tashni-Ann Dubroy, executive vice president and chief operating officer overseeing Howard's IT infrastructure (BisonHub), stated that BisonHub itself was not the root cause of these professor/classroom assignment problems. The article notes that Coursedog, the academic operations platform used alongside Workday, requires department chairs to manually input classroom and professor information, which was a contributing factor. Dean Rubin Patterson of the College of Arts and Sciences reportedly had to temporarily teach a course himself while its assigned professor was still being onboarded.
+
+Relevance to this project: Documents a structural cause (manual data entry, faculty onboarding delays) behind why a student's expected professor for a course may not match what actually happens once the semester starts.

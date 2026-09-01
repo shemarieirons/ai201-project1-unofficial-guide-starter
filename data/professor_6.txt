@@ -1,0 +1,18 @@
+Professor: John Harris
+Department: English
+Course(s) mentioned: ENGL009
+Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2434383
+
+Students described the course as: Strongly positive across nearly all visible reviews. Of 19 student ratings, the large majority rate him "Awesome" or "Great," with very few negative ratings.
+
+The professor's teaching style was described as: Reviewers consistently describe him as caring and understanding, someone who genuinely wants students to succeed and is willing to work with students on personal or school-related struggles as long as they communicate with him.
+
+Workload: One ENGL009 review from Dec 2025 describes the class as easy, without many difficult assignments, calling it close to an "easy A."
+
+Exams: Not heavily emphasized in reviews; ENGL009 appears to be assignment- and participation-driven rather than exam-heavy.
+
+Assignments: Reviewers describe grading criteria as clear, feedback as excellent, and note he reviews assignments before they're due if asked. Participation is noted as mattering in at least one review, alongside a mention of extra credit availability.
+
+Attendance: Mandatory in the reviewed section, with weekly online lecture noted in one review.
+
+Other comments: This professor is included as a non-CS control case - useful for testing that the system can correctly separate department-specific queries (e.g., not surfacing his English-department reviews in response to a CS-specific question).

@@ -1,0 +1,30 @@
+Source Type: Official Howard University department page (baseline, no student opinion)
+Department: Electrical Engineering and Computer Science, College of Engineering and Architecture (CEA)
+Source: https://cea.howard.edu/academics/departments/electrical-engineering-and-computer-science/people-eecs
+
+Description: This is the official, current faculty roster for the EECS department. It contains no student opinion and should be used by the system as a factual baseline to confirm whether a professor a student is asking about is currently listed in the department, and to flag when a RateMyProfessors review might be referring to a professor who is no longer listed here.
+
+Faculty listed include (name - contact):
+- Charles Kim, Ph.D. - ckim@Howard.edu
+- Saurav K. Aryal, PhD - saurav.aryal@Howard.edu
+- Desta Haileselassie Hagos, PhD - desta.hagos@howard.edu
+- Imtiaz Ahmed - Imtiaz.Ahmed@Howard.edu
+- John M. M. Anderson - j_m_anderson@Howard.edu
+- Anietie Andy
+- Jeremy Blackstone - jeremy.m.blackstone@howard.edu
+- Peter Bofah - pbofah@Howard.edu
+- Legand L Burge, III, Ph.D. - lburge@Howard.edu
+- Wenjie Che - Wenjie.Che@howard.edu
+- Torrance P. Fennell - torrance.fennell@Howard.edu
+- Tepper Gill - tgill@Howard.edu
+- Reginald Hobbs - reginald.hobbs@Howard.edu
+- Anamika Paul Rupa, PhD - (Department of Electrical Engineering and Computer Science, CEA)
+- Hassan Salmani, Ph.D. - hassan.salmani@Howard.edu
+- Eric Seabron - eric.seabron@howard.edu
+- Todd Shurn, Ph.D. - tshurn@Howard.edu
+- Lucas Talbert
+- Gloria Washington - gloria.washington@Howard.edu
+- Bernard Woolfolk - bernard.p.woolfolk@Howard.edu
+- Su Yan - su.yan@Howard.edu
+
+Note: Noha Hazzazi and Jiang Li appear in student RateMyProfessors reviews for the Computer Science department but were not captured in this particular listing snapshot - this is exactly the kind of temporal/coverage mismatch the system should be robust to (a professor can be real and currently teaching without appearing in every department listing snapshot).
