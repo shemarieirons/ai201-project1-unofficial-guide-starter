@@ -106,6 +106,19 @@ def build_sources_text(chunks: list[dict[str, Any]]) -> str:
     return "\n".join(f"{index}. {label}" for index, label in enumerate(ordered_sources, start=1))
 
 
+def is_refusal(answer_text: str) -> bool:
+    """True only when the answer is the refusal sentence itself.
+
+    A substring check would also match a partial answer such as "I don't have enough
+    information ... about the exam format, but reviewers do say X", which does cite real
+    retrieved chunks and must keep its source list.
+    """
+    normalized = answer_text.strip().strip("\"'").rstrip()
+    return normalized.startswith(INSUFFICIENT_INFO_RESPONSE) and len(
+        normalized
+    ) <= len(INSUFFICIENT_INFO_RESPONSE) + 1
+
+
 def extract_cited_chunk_ids(answer_text: str) -> list[str]:
     citation_pattern = re.compile(r"(?:\[|【)\s*([A-Za-z0-9_:\-]+)\s*(?:\]|】)")
     return citation_pattern.findall(answer_text)
@@ -170,7 +183,7 @@ def generate_answer(question: str, top_k: int = DEFAULT_TOP_K) -> dict[str, Any]
     if not answer_text:
         answer_text = INSUFFICIENT_INFO_RESPONSE
 
-    if INSUFFICIENT_INFO_RESPONSE in answer_text:
+    if is_refusal(answer_text):
         sources_text = "None — the retrieved sources do not contain enough information to answer the question."
         return {
             "question": question,
