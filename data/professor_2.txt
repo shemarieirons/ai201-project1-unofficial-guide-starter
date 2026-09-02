@@ -1,18 +1,46 @@
 Professor: Jiang Li
 Department: Computer Science
-Course(s) mentioned: General CS courses (specific course codes not listed in reviews)
-Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2323879
+Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2323879 (also mirrored on Coursicle)
+Aggregate stats at time of collection: 1.6/5 overall quality, 16% would take again, 25 ratings, 4.7 difficulty
 
-Students described the course as: Consistently and strongly negative across every visible review. Multiple independent reviewers advise other students to avoid this professor entirely.
+---
+Review 1
+Course: CSCI 170 / CSCI 200 (per Coursicle listing)
+Rating context: Negative
+Text: Describes the class as very hard, with online homework as the worst part - questions not drawn from any textbook, and single assignments reportedly taking up to 8 hours. States that understanding the material effectively requires going to him directly, though he does respond to email quickly. Notes exams mirror the homework format with different numbers, and that MIPS projects are graded by an automated script.
 
-The professor's teaching style was described as: Reviewers report that lectures are long and do not cover material that later appears on homework, projects, or exams. Students say they are expected to participate despite feeling under-taught, and that the professor does not explain concepts in depth when asked to clarify.
+---
+Review 2
+Course: CSCI201, dated May 23rd, 2026
+Rating context: Negative (Quality 2.0, Difficulty 5.0)
+Text: Says he spends time going through concepts but expects too much from students. Describes assignments as unrealistic in workload and very time-consuming.
 
-Workload: Reviewers describe assignments and projects as unrealistic in scope and very time-consuming relative to what was actually taught in class.
+---
+Review 3
+Course: Not specified
+Rating context: Negative
+Text: Reports that exams, assignments, and projects were submitted through an old course website that caused frequent errors and difficulty getting answers accepted correctly.
 
-Exams: Homework reportedly counts for more of the grade than exams, and exam content is described as disconnected from lecture content.
+---
+Review 4
+Course: Not specified
+Rating context: Strongly negative
+Text: Short review stating this is the worst teacher the reviewer has had at Howard, advising other students not to take any of his classes.
 
-Assignments: Projects were submitted through an older course website reviewers describe as error-prone. Reviewers also report the professor has, in some cases, accused students of academic dishonesty on projects and required them to "interview" to justify their grade.
+---
+Review 5
+Course: Not specified
+Rating context: Strongly negative
+Text: Advises against taking the class, saying the professor "drains your GPA," does not care about students, and offers no extra credit. Claims he makes unilateral decisions about whether a student cheated and requires students to "interview" to justify a project grade. Recommends waiting for another professor's section instead.
 
-Attendance: Not consistently detailed across reviews.
+---
+Review 6
+Course: Not specified
+Rating context: Strongly negative
+Text: Calls him one of the worst professors the reviewer has had, saying he does not teach or explain concepts in depth, and refuses to clarify further when asked because students "should just get it." Reports that he ridicules students who don't understand and accuses students of cheating on projects if their understanding isn't judged sufficient.
 
-Other comments: Recurring phrases across multiple reviews include describing him as one of the worst professors students have had at Howard, citing a lack of support for struggling students and no opportunity for extra credit.
+---
+Review 7
+Course: Not specified
+Rating context: Strongly negative
+Text: Advises other students to avoid this professor at all costs. States homework counts for more of the final grade than exams, and that lecture content does not cover what's tested.

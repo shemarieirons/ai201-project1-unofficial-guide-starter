@@ -64,11 +64,15 @@
 
 | # | Source document | Chunk text |
 |---|----------------|------------|
-| 1 | | |
-| 2 | | |
-| 3 | | |
-| 4 | | |
-| 5 | | |
+| 1 | professor_jeremy_blackstone.txt | **Rate My Professors: Jeremy Blackstone** — Describes him as the most simplistic and straightforward professor the reviewer has had. Says all assignments are posted at the beginning of the course, are not numerous or difficult, and students can work at their own pace while following lectures if needed. Notes that if you already know C++, the course plays like a review. Exams follow the same structure as the homework. Calls it the most carefree class they've taken, taking up little time. Tags: extra credit, clear grading criteria, graded by few things. |
+
+| 2 | professor_jiang_li.txt | **Rate My Professors: Jiang Li** — Review describes the grading as unclear and difficult to understand. The reviewer says the lectures do not match the homework or exams and expresses frustration with the course structure. The reviewer recommends against taking the course with him. |
+
+| 3 | faculty_directory_eecs.txt | **Source: Howard University EECS faculty directory** — Department: Electrical Engineering and Computer Science. Faculty: Charles Kim, Ph.D. Email: ckim@Howard.edu |
+
+| 4 | hilltop_article_1.txt | **The Hilltop — Article on registration delays for Spring semester** — Students reported problems with BisonHub and delays during Spring course registration, including issues with course information and difficulty registering for classes. |
+
+| 5 | hilltop_article_2.txt | **The Hilltop — Article on unassigned professors/classrooms at semester start** — Students experienced confusion during the first week of classes because some courses did not yet have professors or classrooms assigned. The situation created uncertainty for students trying to determine where and with whom they would attend class. |
 
 ---
 

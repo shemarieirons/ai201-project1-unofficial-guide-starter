@@ -1,18 +1,18 @@
 Professor: Gloria Washington
 Department: Computer Science
-Course(s) mentioned: General CS courses (specific course codes not listed in reviews)
-Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2084505
+Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2084505 (also mirrored on Coursicle)
+Aggregate stats at time of collection: 2.7/5 overall quality, 42% would take again, 18 ratings, 3.7 difficulty. Top tags include: tough grader, group projects, lots of homework, participation matters, beware of pop quizzes.
 
-Students described the course as: Reviews are sharply divided. Several reviewers describe her as one of the worst professors in the department and advise avoiding her if possible, while at least one reviewer describes her as a great teacher overall.
+---
+Review 1
+Course: Not specified (Coursicle-sourced)
+Rating context: Negative
+Text: Reports that her quizzes and tests sometimes contain mistakes, or questions where multiple answers could reasonably be correct, but she marks students wrong if the answer doesn't match her exact intended interpretation. States students often have to argue for points, and whether they receive them can depend on the day. Warns that skipping class or offending her makes this worse.
 
-The professor's teaching style was described as: Negative reviews report unclear instructions and describe her as difficult to have a civil conversation with. The one detailed positive review describes her as fair, with frequent pop quizzes that were sometimes predictable and not especially difficult.
+---
+Review 2
+Course: CSCI410, dated December 17th, 2024
+Rating context: Positive (Quality 1.0 in the platform's own metadata, but review text itself is positive - noted here as an inconsistency in the source data)
+Text: Describes her as a great teacher overall. Says she gives a lot of pop quizzes, but they are sometimes predictable and not especially hard. Notes she offers enough extra credit to meaningfully raise a struggling grade, adding that "some students don't deserve the kindness she gives."
 
-Workload: The positive review mentions frequent pop quizzes as part of the course structure.
-
-Exams: Not consistently detailed across reviews.
-
-Assignments: The positive review notes generous extra credit opportunities, enough to meaningfully raise a student's grade if needed.
-
-Attendance: Not consistently detailed across reviews.
-
-Other comments: This professor is a clear example of conflicting student opinion in the dataset - retrieval and generation for this professor should surface both perspectives rather than resolving them into a single verdict.
+Note on this professor's review set: the aggregate rating (42% would take again, 2.7/5 quality) suggests more negative reviews exist on the full RMP page beyond what was captured in this collection pass. Treat this file as a partial sample and prioritize documenting the disagreement between reviews 1 and 2 rather than treating either as the full picture.

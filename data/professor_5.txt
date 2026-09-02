@@ -1,18 +1,12 @@
 Professor: Anamika Rupa
 Department: Computer Science
-Course(s) mentioned: CSCI120
 Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2976470
+Aggregate stats at time of collection: 2.0/5 overall quality, 20% would take again, 5 ratings, 3.6 difficulty. Top tags include: lots of homework, tough grader, participation matters, lecture heavy, test heavy.
 
-Students described the course as: Predominantly negative, based on a small sample of 5 ratings. Only 20% of reviewers said they would take her again, with an overall quality score of 2.0/5.
+---
+Review 1
+Course: CSCI120, dated April 9th, 2025
+Rating context: Negative (Quality 1.0, Difficulty 5.0 per platform metadata; reviewer received a C)
+Text: States she is not a good professor and doesn't seem to know what she's doing. Describes the homework load as excessive for what the reviewer considered a 2-credit class, and says the course was not worth that workload. Attendance was mandatory.
 
-The professor's teaching style was described as: Tagged by reviewers as lecture-heavy and test-heavy, with a reputation as a tough grader. One CSCI120 review from April 2025 states the professor "doesn't know what she is doing" and describes the course as not worth the workload assigned.
-
-Workload: Reviewers describe the homework load as excessive relative to a 2-credit course.
-
-Exams: Level of difficulty is rated relatively high (3.6/5) by reviewers, consistent with the "test heavy" tag.
-
-Assignments: Described as heavy relative to the credit weight of the course; one reviewer received a C despite completing the coursework.
-
-Attendance: Mandatory in the reviewed CSCI120 section.
-
-Other comments: Sample size is small (5 ratings) compared to other CS professors in this dataset, so conclusions here should be treated as less certain than for professors with larger review counts.
+Note: Only 5 ratings total are behind this professor's aggregate score, the smallest sample size of any CS professor in this dataset - flag this as a lower-confidence source in retrieval/generation.

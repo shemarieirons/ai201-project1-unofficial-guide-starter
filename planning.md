@@ -103,31 +103,47 @@ I chose Howard University Course and Professor Guide. This knowledge is valuable
      You'll use this diagram as context when prompting AI tools to implement each stage. -->
 
 ```
-Documents
-    |
-    v
-Document Ingestion
-(Python)
-    |
-    v
+Source Documents
+
+       ↓
+
+Document Ingestion / Cleaning
+
+       ↓
+
 Chunking
-(Document-specific chunking)
-    |
-    v
-Embedding + Vector Store
-(sentence-transformers
- all-MiniLM-L6-v2 + ChromaDB)
-    |
-    v
-Retrieval
-(ChromaDB, Cosine similarity, Top-k = 5)
-    |
-    v
-Generation
-(Groq/gpt-oss-120b)
-    |
-    v
-Answer+Sources
+
+       ↓
+
+Embeddings
+
+       ↓
+
+ChromaDB Vector Store
+
+       ↓
+
+User Question
+
+       ↓
+
+Semantic Retrieval (Top 5)
+
+       ↓
+
+Retrieved Context
+
+       ↓
+
+Groq LLM
+
+       ↓
+
+Grounded Answer + Sources
+
+       ↓
+
+Gradio Interface
 ```
 
 ---

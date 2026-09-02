@@ -1,18 +1,22 @@
 Professor: Jeremy Blackstone
 Department: Computer Science / Electrical Engineering and Computer Science
-Course(s) mentioned: General CS courses (specific course codes not listed in reviews)
 Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2640220
+Aggregate stats at time of collection: 1.8/5 overall quality, 91% would take again, 21 ratings, 2.5 difficulty
 
-Students described the course as: Most reviewers rate this as one of the strongest experiences in the CS department. Multiple reviews independently rank him among the top professors in CEA/Howard, citing genuine investment in student learning and career preparation beyond Howard.
+---
+Review 1
+Course: Not specified
+Rating context: Positive
+Text: Describes him as the most simplistic and straightforward professor the reviewer has had. Says all assignments are posted at the beginning of the course, are not numerous or difficult, and students can work at their own pace while following lectures if needed. Notes that if you already know C++, the course plays like a review. Exams follow the same structure as the homework. Calls it the most carefree class they've taken, taking up little time. Tags: extra credit, clear grading criteria, graded by few things.
 
-The professor's teaching style was described as: Engaged and student-focused; reviewers say he "genuinely wants you to learn" and actively sets students up for careers after graduation.
+---
+Review 2
+Course: Not specified
+Rating context: Positive
+Text: Calls him the best computer science professor the reviewer has had, saying he genuinely wants students to learn and sets them up for their career beyond Howard. States they couldn't ask for a better professor. Tags: participation matters, extra credit, clear grading criteria.
 
-Workload: Not consistently detailed across reviews.
-
-Exams: One review reported a specific semester where a final exam was altered without clear communication to students, causing confusion during finals week.
-
-Assignments: Reviews are mixed on grading pace - one review described a semester where only one assignment had been graded by finals week for seniors, calling the lesson materials ("lazy ppts") insufficiently prepared. This appears to be an outlier relative to the otherwise strongly positive reviews.
-
-Attendance: Not consistently detailed across reviews.
-
-Other comments: One review states "I'm astounded at all the good reviews" before describing a negative experience, suggesting most other reviewers had a notably better experience with this professor. Overall sentiment across the page skews positive.
+---
+Review 3
+Course: Not specified (finals week, senior-level)
+Rating context: Negative, and explicitly noted by the reviewer as an outlier relative to other reviews
+Text: Reviewer opens by saying they are surprised by all the positive reviews on this page. Describes a specific semester as embarrassingly disorganized: by finals week for seniors, only one assignment had been graded. Calls the lecture slides low-effort ("lazy ppts"). States the professor posted the wrong final exam and then altered the exam questions without clearly communicating the change to students.

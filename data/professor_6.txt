@@ -1,18 +1,40 @@
 Professor: John Harris
 Department: English
-Course(s) mentioned: ENGL009
-Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2434383
+Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2434383 (also mirrored at ratemyprofessors.com/professor?tid=2434383)
+Aggregate stats at time of collection: 4.8/5 overall quality, 100% would take again, 19 ratings, 2.0 difficulty. Top tags include: caring, gives good feedback, clear grading criteria, respected, amazing lectures.
 
-Students described the course as: Strongly positive across nearly all visible reviews. Of 19 student ratings, the large majority rate him "Awesome" or "Great," with very few negative ratings.
+---
+Review 1
+Course: ENGL009, dated December 25th, 2025
+Rating context: Positive (Quality 5.0, Difficulty 2.0, Grade A)
+Text: Describes him as incredibly caring and understanding, giving students plenty of time to complete major assignments and genuinely wanting them to succeed.
 
-The professor's teaching style was described as: Reviewers consistently describe him as caring and understanding, someone who genuinely wants students to succeed and is willing to work with students on personal or school-related struggles as long as they communicate with him.
+---
+Review 2
+Course: ENGL009
+Rating context: Positive
+Text: Calls him fantastic, always willing to review assignments before they're due, and says he provides excellent feedback. Describes him as polite and genuinely invested in student success; states they would gladly take his class again.
 
-Workload: One ENGL009 review from Dec 2025 describes the class as easy, without many difficult assignments, calling it close to an "easy A."
+---
+Review 3
+Course: ENGL009
+Rating context: Positive
+Text: Describes him as cool and easygoing, joking with students and keeping the class engaged. Says he was understanding about late assignments when the reviewer was struggling to balance coursework and responded to emails quickly. Notes the course had only three essays and one final portfolio, calling it an easy A+.
 
-Exams: Not heavily emphasized in reviews; ENGL009 appears to be assignment- and participation-driven rather than exam-heavy.
+---
+Review 4
+Course: ENGL009
+Rating context: Positive
+Text: Calls him one of the reviewer's favorite professors, describing him as animated in lectures in a way that encouraged participation. Notes about three major assignments plus a final portfolio, with ample time given to complete them, and prompt email replies with extra help available.
 
-Assignments: Reviewers describe grading criteria as clear, feedback as excellent, and note he reviews assignments before they're due if asked. Participation is noted as mattering in at least one review, alongside a mention of extra credit availability.
+---
+Review 5
+Course: ENGL009, dated May 11th, 2022
+Rating context: Positive (Quality 5.0, Difficulty 2.0)
+Text: Describes him as an amazing teacher who is lenient and accommodating, responds to emails quickly, and is open to office-hours meetings. Calls the class easy, fun, and not stressful.
 
-Attendance: Mandatory in the reviewed section, with weekly online lecture noted in one review.
-
-Other comments: This professor is included as a non-CS control case - useful for testing that the system can correctly separate department-specific queries (e.g., not surfacing his English-department reviews in response to a CS-specific question).
+---
+Review 6
+Course: Not specified (pandemic-era semester)
+Rating context: Positive
+Text: Describes him as one of the more courteous professors during the pandemic period, saying the class was relatively useful and not too hard. Calls him a fair grader who was adaptable in helping students, noting that class meetings were shortened during that period.

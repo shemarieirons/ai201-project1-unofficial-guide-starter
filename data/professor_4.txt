@@ -1,18 +1,28 @@
 Professor: Noha Hazzazi
 Department: Computer Science
-Course(s) mentioned: CSCI120
-Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2418869 (also mirrored at ratemyprofessors.com/ShowRatings.jsp?tid=2418869)
+Source: RateMyProfessors - https://www.ratemyprofessors.com/professor/2418869
+Aggregate stats at time of collection: 3.9/5 overall quality, 72% would take again, 14 ratings, 3.6 difficulty
 
-Students described the course as: Mixed. Several reviewers say she is fair and highly available outside of class, always responding when reached out to. A CSCI120-specific review from Nov 2024 describes the course as feeling like a "waste of time," structured mostly around a repeating sequence of guest speakers rather than direct instruction, comparing it to a freshman seminar.
+---
+Review 1
+Course: Not specified
+Rating context: Positive
+Text: States she was always available, was very helpful whenever the reviewer reached out, and describes her as very fair.
 
-The professor's teaching style was described as: Reviewers describe her as approachable and responsive to student outreach. However, the CSCI120 review reports that exams covered topics that were barely addressed in class, leaving students underprepared despite labs and assignments being described as fine on their own.
+---
+Review 2
+Course: CSCI120
+Rating context: Negative
+Text: Warns other students to show up to class, saying no real content was taught all semester beyond a repeating sequence of guest speakers, with pop quizzes given unpredictably. Tags: group projects, beware of pop quizzes.
 
-Workload: Attendance is mandatory in at least one course section, with frequent, unpredictable pop quizzes.
+---
+Review 3
+Course: CSCI120, dated November 15th, 2024
+Rating context: Negative (Quality 4.0, Difficulty 2.0 per platform metadata)
+Text: Describes the class as feeling like a waste of time, though the reviewer isn't sure who to blame since they believe Hazzazi did the best she could within the course's structure. Says the course consisted mostly of repeated guest speakers followed by one large project, comparing it to a freshman seminar. Notes attendance is mandatory and pop quizzes are frequent. States labs and assignments were fine on their own, but exams covered topics the course barely focused on.
 
-Exams: One reviewer specifically warns that exam content did not match what was emphasized during the semester.
-
-Assignments: One large group project structure is mentioned for CSCI120, alongside frequent smaller pop quizzes.
-
-Attendance: Mandatory in at least one section; reviewers say missing class makes passing very unlikely.
-
-Other comments: One reviewer notes that students giving very positive reviews tended to have received B or C grades, implying reviewer sentiment doesn't map cleanly to strong performance in the course. Academic integrity is enforced strictly - one review notes cheating results in a zero.
+---
+Review 4
+Course: Not specified
+Rating context: Mixed/critical
+Text: Notes that students who describe her as amazing tended to have received B or C grades, implying that positive sentiment doesn't necessarily track with strong performance. Advises against taking her if grades are a priority. Also states cheating results in a zero, indicating strict academic integrity enforcement.
