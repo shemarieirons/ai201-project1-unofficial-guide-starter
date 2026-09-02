@@ -28,9 +28,18 @@ Other entry points:
 
 ```bash
 python src/ingest.py                      # chunk-by-chunk debug report, no embedding
-python src/retrieve.py "your question"    # retrieval only, prints distances + chunk text
+python src/retrieve.py "your question"    # semantic retrieval only, prints distances + chunk text
+python src/hybrid.py "your question"      # compares semantic / BM25 / hybrid side by side
 python src/generate.py "your question"    # full grounded answer in the terminal
 python eval_dump.py                       # regenerate eval_output.md for all 5 test questions
+```
+
+Stretch-feature reports (see [Stretch Features](#stretch-features)):
+
+```bash
+python compare_retrieval.py               # semantic vs BM25 vs hybrid  -> stretch_hybrid_results.md
+python compare_chunking.py                # structure-aware vs fixed    -> stretch_chunking_results.md
+python demo_stretch.py                    # filtering + memory demos    -> stretch_demo.md
 ```
 
 `src/embed.py` must be run before `src/app.py` on a fresh clone — the `.chroma/` directory is
@@ -95,6 +104,22 @@ Grounded Answer + Sources             (source list built from chunk metadata, no
 Gradio Interface                      (src/app.py)
 ```
 
+The retrieval stage above describes the **baseline** system, which is what the Retrieval Test
+Results and Evaluation Report below measure. After the stretch features, that one stage
+becomes:
+
+```
+User question
+   ↓ (if a follow-up)  rewrite_followup()      — resolve pronouns before retrieval
+   ↓
+   ├─ BM25 keyword scoring     (rank-bm25, over all 47 chunks)
+   └─ Dense semantic scoring   (all-MiniLM-L6-v2 + ChromaDB, optional `where` filter)
+         ↓
+   min-max normalize each, then  0.5 * semantic + 0.5 * bm25       (src/hybrid.py)
+         ↓
+   top-5 chunks → the same grounded generation stage, unchanged
+```
+
 ---
 
 ## Ingestion Pipeline
@@ -126,9 +151,12 @@ have genuinely different structures.
 
 | Document type | Chunk unit | Resulting size | Chunks |
 |---|---|---|---|
-| RateMyProfessors reviews | one review per chunk | ~60–110 words | 24 |
-| The Hilltop articles | paragraph groups, target 300 tokens | ~190–230 words | 3 |
-| EECS faculty directory | one faculty entry per chunk | ~15–25 words | 21 |
+| RateMyProfessors reviews | one review per chunk | 62–198 tokens (median 102) | 23 |
+| The Hilltop articles | paragraph groups, target 300 tokens | 207–250 tokens (median 245) | 3 |
+| EECS faculty directory | one faculty entry per chunk | 34–44 tokens (median 39) | 21 |
+
+Token counts are whitespace/word tokens as counted by `approx_token_count()`, measured on
+the live index, and include the header block prepended to every chunk.
 
 **Overlap:**
 
@@ -155,13 +183,13 @@ email address with no name attached.
 
 **Honest limitation:** the 300-token/50-token overlap path is implemented in
 `chunk_paragraphs_with_overlap()` but **never actually fires on the current corpus**. All
-three Hilltop articles are 192–230 words, so each falls under the 300-token target and
+three Hilltop articles come in at 207–250 tokens, so each falls under the 300-token target and
 returns as a single chunk. Zero of the 47 chunks in the live index use overlap. The code path
 is correct and tested, but the overlap strategy is currently unexercised — if I added a
 longer article, or lowered the target, it would engage. I chose to report this rather than
 describe overlap as if it were doing work.
 
-**Final chunk count: 47** (24 review + 21 directory + 3 article). This sits just under the
+**Final chunk count: 47** (23 review + 21 directory + 3 article). This sits just under the
 assignment's 50-chunk guideline, which is a direct consequence of keeping each review and
 each directory entry intact instead of splitting them into smaller fragments. I judged
 faithful chunk boundaries to be worth more than hitting the count, and the retrieval results
@@ -575,18 +603,30 @@ A Gradio web app, launched with `python src/app.py` and served at `http://localh
 
 | Field | Type | Purpose |
 |---|---|---|
-| `Question` | multi-line textbox (3 lines) | The plain-language question. Placeholder text reads "Ask about a professor, article, or Howard registration issue." |
-| `Submit` | button | Runs the query. Pressing Enter in the question box does the same thing. |
+| `Question` | multi-line textbox (3 lines) | The plain-language question. Placeholder reads "Ask about a professor, article, or Howard registration issue." |
+| `Retrieval method` | radio: hybrid / semantic / bm25 | Which retriever to use. Defaults to `hybrid`. Lets a viewer switch methods on the same question and watch the retrieved chunks change. |
+| `Conversation memory` | checkbox, on by default | When on, a follow-up is resolved into a standalone question before retrieval |
+| `Filter by source` | dropdown | `Any`, `RateMyProfessors`, `The Hilltop`, `Howard University EECS` — read from stored chunk metadata at startup |
+| `Filter by professor` | dropdown | `Any` or any professor named in the corpus |
+| `Ask` | button | Runs the query. Pressing Enter in the question box does the same thing. |
+| `New conversation` | button | Clears the conversation history so the next question starts fresh |
 
 **Output fields:**
 
 | Field | Type | Purpose |
 |---|---|---|
-| `Answer` | textbox (8 lines), read-back | The grounded answer, with inline `【chunk_id】` citations |
-| `Sources` | textbox (6 lines), read-back | The computed source list — filename plus source type, professor, or article title |
+| `Answer` | textbox (10 lines) | The grounded answer, with inline `【chunk_id】` citations |
+| `Sources` | textbox (4 lines) | The computed source list — filename plus source type, professor, or article title |
+| `Retrieved chunks` | textbox (6 lines), inside the collapsible **Retrieval detail** panel | Rank, chunk ID and distance for each retrieved chunk, so retrieval is inspectable without leaving the UI |
+| `Conversation memory` | textbox (2 lines), inside **Retrieval detail** | Shows what a follow-up was rewritten to, or that memory is off |
+
+The two filter dropdowns and the retrieval-method radio are the stretch features surfaced in
+the interface; the four base fields (`Question`, `Ask`, `Answer`, `Sources`) are all that is
+needed to use the system.
 
 A command-line interface is also available for the same pipeline via
-`python src/generate.py "your question"`, which prints the question, answer, and sources.
+`python src/generate.py "your question"`, which prints the question, answer, and sources, and
+accepts `--method`, `--professor`, `--source`, and `--top-k`.
 
 **Sample interaction transcript** (one complete query and response):
 
@@ -681,13 +721,14 @@ failure.** This is not a hallucination and not a generation failure — the gene
 right thing with what it was given. The cause is in how I built the chunks.
 
 Every RateMyProfessors review chunk begins with the same four-line header block: professor,
-department, source URL, and aggregate stats. That header is roughly 40–60 words, while the
-review text it precedes is often only 40–80 words. So for a short review, **more than half
-the embedded tokens are boilerplate**, and the boilerplate is structurally near-identical
-across all 24 review chunks — same field names, same URL prefix, same "Aggregate stats at
+department, source URL, and aggregate stats. Measured on the live index, that header is 34–54
+tokens, and it accounts for a **median 45% of every review chunk — rising to 57%, with 7 of
+the 23 review chunks more than half boilerplate**. The boilerplate is also structurally
+near-identical
+across all 23 review chunks — same field names, same URL prefix, same "Aggregate stats at
 time of collection" phrasing, same "N/5 overall quality, N% would take again" pattern. A
 single averaged 384-dimension embedding cannot help but be pulled toward that shared
-template, which compresses all 24 review chunks into a tight neighbourhood. The visible
+template, which compresses all 23 review chunks into a tight neighbourhood. The visible
 symptom is the distance spread in Query 2: ranks 1 through 5 span 0.607 to 0.628, a range of
 0.02, so the correct professor's review is separated from a chunk about an English professor
 by almost nothing.
@@ -809,3 +850,354 @@ triggers it, so the spec describes a mechanism the live system does not currentl
 also wrote the failure-case root-cause analysis myself, from reading the distance spreads in
 `eval_output.md` — the boilerplate-dilution explanation came from noticing that the top five
 Query 2 results span only 0.02, then going back to look at what those chunks have in common.
+
+---
+---
+
+# Stretch Features
+
+All four stretch features were specified in [planning.md](planning.md) under **Stretch
+Feature Plan** before any of them were implemented. Each one targets the boilerplate-dilution
+retrieval failure documented above rather than adding unrelated surface area.
+
+| Feature | Reproduce with | Full results |
+|---|---|---|
+| Hybrid search (BM25 + semantic) | `python compare_retrieval.py` | [stretch_hybrid_results.md](stretch_hybrid_results.md) |
+| Chunking strategy comparison | `python compare_chunking.py` | [stretch_chunking_results.md](stretch_chunking_results.md) |
+| Metadata filtering | `python demo_stretch.py` | [stretch_demo.md](stretch_demo.md) |
+| Conversational memory | `python demo_stretch.py` | [stretch_demo.md](stretch_demo.md) |
+
+`compare_retrieval.py` and `compare_chunking.py` are retrieval-only and need no API key.
+
+---
+
+## Stretch 1 — Hybrid Search
+
+**How the scores are combined.** Implemented in [src/hybrid.py](src/hybrid.py). Both
+retrievers score the full 47-chunk corpus, each score list is min-max normalized to [0, 1]
+across the candidate set, and the two are combined by weighted sum:
+
+```
+hybrid_score = alpha * normalized_semantic + (1 - alpha) * normalized_bm25      (alpha = 0.5)
+```
+
+Semantic similarity is `1 - cosine_distance` so both components point the same direction
+(higher is better). **Normalization is not cosmetic** — BM25 scores are unbounded (they reach
+7.83 on the Blackstone query) while cosine similarity is bounded to [-1, 1], so summing the
+raw values would let BM25 dominate arbitrarily. I chose weighted score fusion over Reciprocal
+Rank Fusion because it preserves *how much* each retriever contributed to a given hit, which
+RRF discards; the per-hit breakdown is printed by the CLI and shown in the tables below.
+
+```bash
+python src/hybrid.py "What do students say about Jeremy Blackstone?"           # compares all three
+python src/generate.py "..." --method hybrid                                    # end-to-end (default)
+```
+
+**Comparison on the evaluation question set.** precision@5 is the fraction of the top 5
+chunks coming from a source file hand-labeled relevant in
+[src/eval_questions.py](src/eval_questions.py). The labels are deliberately strict: for "what
+do students say about X" questions only the student-review file counts, so a professor's
+official directory entry scores as noise even though it matches their name — retrieving an
+email address is not answering the question.
+
+| Question | semantic | BM25 | hybrid | Winner |
+|---|---|---|---|---|
+| 1 — Jiang Li grading and exams | 0.80 | 0.80 | **1.00** | hybrid |
+| 2 — Jeremy Blackstone | 0.20 | **0.60** | **0.60** | BM25 / hybrid tie |
+| 3 — course registration | 0.60 | 0.60 | 0.60 | tie |
+| 4 — Gloria Washington | 0.40 | 0.40 | 0.40 | tie on precision, see below |
+| **Mean precision@5** | **0.500** | **0.600** | **0.650** | **hybrid** |
+
+Question 5 is out-of-scope, so no document is relevant and precision is undefined. All three
+methods still produce the correct refusal.
+
+**What each method returned on the three most informative queries:**
+
+*Query 2 — "What do students say about Jeremy Blackstone?"* — this is the query that fails in
+the baseline system.
+
+| Rank | semantic | BM25 | hybrid |
+|---|---|---|---|
+| 1 | `professor_1::review_2` | `faculty_directory::07_jeremy_blackstone` | `professor_1::review_2` |
+| 2 | `professor_2::review_6` ✗ | `professor_1::review_2` | `faculty_directory::07_jeremy_blackstone` ✗ |
+| 3 | `professor_6::review_6` ✗ | `professor_1::review_3` | `professor_1::review_1` |
+| 4 | `professor_6::review_5` ✗ | `professor_1::review_1` | `professor_1::review_3` |
+| 5 | `professor_6::review_2` ✗ | `professor_2::review_5` ✗ | `professor_6::review_4` ✗ |
+| **Blackstone reviews found** | **1 of 3** | **3 of 3** | **3 of 3** |
+
+**Hybrid wins here, and it wins for the reason I predicted.** Semantic search finds one
+Blackstone review and then fills the remaining four slots with an English professor, because
+the shared header boilerplate makes every review chunk look alike. BM25 scores the surname
+`blackstone` directly and finds all three. Hybrid keeps BM25's recall while using the semantic
+signal to demote the directory entry from rank 1 to rank 2 — the directory chunk is the
+strongest *lexical* match — at 39 tokens against a review median of 102, the surname is a
+far larger share of it, so its BM25 term density is enormous — but a weak *semantic* match for "what do students say", and only the
+fusion gets both judgments right.
+
+*Query 1 — "What do students say about Jiang Li's grading and exams?"* — hybrid is the only
+method to score 1.00. Semantic loses a slot to a Noha Hazzazi review and BM25 loses one to
+John Harris (the word "grading" appears in his tags), but the two make *different* mistakes,
+so fusion cancels both and returns five Jiang Li reviews.
+
+*Query 4 — "Do students have consistent opinions about Gloria Washington?"* — precision is
+0.40 for all three, but the ranking differs in a way precision@5 cannot see. Semantic ranks
+`professor_4` (**the wrong professor**) first; hybrid ranks `professor_3::review_1` — the
+correct professor — first. The baseline answer was only correct because the generator ignored
+its own top-ranked chunk. After hybrid, the top-ranked chunk is the right one.
+
+**Honest cost of hybrid search.** It introduces a noise type semantic search did not have:
+the 21 faculty-directory entries are short and name-dense, so they score very highly on BM25
+for any name query. Hybrid demotes them but does not eliminate them — the directory entry
+still occupies rank 2 on Query 2 and rank 2 on Query 4, costing a slot that a real review
+could have used. A production fix would be to weight BM25 by chunk length or exclude
+`document_type = faculty_directory` from name queries by default.
+
+**Effect on the documented failure case.** Re-running the failed Question 2 through the full
+pipeline with hybrid retrieval:
+
+```text
+$ python src/generate.py "What do students say about Jeremy Blackstone?"
+
+Answer:
+Students who have posted reviews of Professor Jeremy Blackstone on RateMyProfessors share
+mixed experiences:
+
+* Positive impressions – Two reviewers praise him highly. One calls him "the best
+  computer-science professor" they have had, noting that he "genuinely wants students to
+  learn" and helps set them up for their careers beyond Howard...【professor_1::review_2】.
+  Another reviewer describes Blackstone as "the most simplistic and straightforward"
+  professor they've encountered... The class is portrayed as "carefree," with exams mirroring
+  the homework【professor_1::review_1】.
+
+* Negative impression – A third reviewer, who labels their comment as an outlier, reports a
+  very different experience. They say the semester was "embarrassingly disorganized," with
+  only one assignment graded by finals week, "lazy" lecture slides, and a mishap where the
+  professor posted the wrong final exam and then altered the exam questions without clearly
+  informing students【professor_1::review_3】.
+
+Thus, while most student reviews highlight Blackstone's clear organization, supportive
+grading practices, and career-focused attitude, at least one student felt the course was
+poorly managed and confusing.
+
+Sources:
+1. professor_1.txt — RateMyProfessors (Jeremy Blackstone, Computer Science / Electrical Engineering and Computer Science)
+```
+
+This now matches the planning.md expected answer — "mostly positive... there is also at least
+one negative comment" — so **Question 2 moves from partially accurate to accurate**.
+
+---
+
+## Stretch 2 — Chunking Strategy Comparison
+
+Two strategies, same embedding model, same 5 questions, semantic-only retrieval on both sides
+so the hybrid feature does not confound the result. Strategy B is built into its own ChromaDB
+collection so the live index is untouched.
+
+| | A — structure-aware (production) | B — fixed size |
+|---|---|---|
+| Rule | one review per chunk; one directory entry per chunk; 300-token paragraph groups for articles | 1000 characters, 150-character overlap, structure ignored |
+| Professor header re-attached | yes, every chunk | no |
+| Chunk count | 47 | 28 |
+
+| Question | A precision@5 | B precision@5 |
+|---|---|---|
+| 1 — Jiang Li grading and exams | **0.80** | 0.20 |
+| 2 — Jeremy Blackstone | **0.20** | 0.00 |
+| 3 — course registration | 0.60 | **1.00** |
+| 4 — Gloria Washington | 0.40 | 0.40 |
+| **Mean** | **0.500** | **0.400** |
+
+**Strategy A wins overall, but the per-question split is the interesting part, and it does
+not favour A everywhere.**
+
+**A wins decisively on the professor questions** (0.80 vs 0.20, and 0.20 vs 0.00 — the
+fixed-size index retrieves *nothing* relevant for Blackstone). The cause is visible in the
+chunks themselves. Of Strategy B's 18 review chunks:
+
+| Property | Count |
+|---|---|
+| Missing the `Professor:` header — reader cannot tell who it is about | **12 of 18** |
+| Contain more than one review, blending separate students' opinions | **9 of 18** |
+| End mid-sentence | **7 of 18** |
+
+Two thirds of B's review chunks do not name their own professor, because a 1000-character
+window starting partway into a file leaves the header behind. Those chunks are unretrievable
+by name and uninterpretable if retrieved — the exact "bad chunk" failure the assignment
+describes. Nine of them merge two students' contradictory opinions into a single averaged
+embedding.
+
+**B wins on Question 3** (1.00 vs 0.60), and this is a real result I am not going to explain
+away. The Hilltop articles are continuous news prose with no internal record structure, so a
+1000-character window is a perfectly reasonable unit for them, and because B's article chunks
+are numerous and uniformly on-topic, all five top hits come from article files while A leaks
+two professor-review chunks into its top 5.
+
+**The conclusion is therefore narrower than "my strategy is better."** Fixed-size chunking is
+competitive-to-better on unstructured prose and much worse on structured records. The corpus
+here is 45% directory records and 49% discrete reviews, so structure-aware chunking wins the
+average — but the honest reading is that **chunking should follow document structure, which
+is exactly why I dispatched by document type rather than picking one global chunk size.** The
+comparison validates the per-type dispatch rather than any single number.
+
+---
+
+## Stretch 3 — Metadata Filtering
+
+Every chunk carries `source`, `document_type`, `professor`, and (for articles) `title`/`date`
+metadata from ingestion. Filters pass through to **ChromaDB's native `where` clause** for the
+semantic leg, and the same predicate is applied to the BM25 candidate set by
+`matches_filter()`, so hybrid search honours filters too rather than silently ignoring them.
+
+Exposed in the Gradio UI as **Filter by source** and **Filter by professor** dropdowns, whose
+options are read from the stored metadata at startup. Also on the CLI:
+
+```bash
+python src/hybrid.py "...course registration..." --source "The Hilltop"
+python src/generate.py "Is she a tough grader?" --professor "Gloria Washington"
+```
+
+**Visible effect — filtering by source.** Query: *"What problems have students experienced
+with course registration at Howard?"*
+
+| Rank | Unfiltered | Filtered to `source = The Hilltop` |
+|---|---|---|
+| 1 | `hilltop_article_1::chunk_1` (1.0000) | `hilltop_article_1::chunk_1` (1.0000) |
+| 2 | `hilltop_article_3::chunk_1` (0.8931) | `hilltop_article_3::chunk_1` (0.5550) |
+| 3 | `hilltop_article_2::chunk_1` (0.7580) | `hilltop_article_2::chunk_1` (0.0000) |
+| 4 | `professor_3::review_1` (0.4579) ✗ | — removed by filter |
+| 5 | `professor_4::review_4` (0.4416) ✗ | — removed by filter |
+
+The two professor-review chunks that the baseline evaluation identified as noise on this
+question are gone, leaving only student-newspaper evidence. Note that the filtered scores
+change rather than staying fixed: normalization is computed over the filtered candidate set,
+so `hilltop_article_2` drops to 0.0000 as the new worst-of-three rather than keeping 0.7580.
+
+**Visible effect — filtering by professor.** Query: *"Is she a tough grader?"* — a question
+with **no name in it at all**, which the unfiltered system has no way to route.
+
+| Rank | Chunk | Source | Score |
+|---|---|---|---|
+| 1 | `professor_3::review_2` | professor_3.txt | 1.0000 |
+| 2 | `professor_3::review_1` | professor_3.txt | 0.8618 |
+| 3 | `faculty_directory_eecs::19_gloria_washington` | faculty_directory_eecs.txt | 0.0000 |
+
+The candidate set drops from 47 chunks to the 3 whose `professor` metadata is Gloria
+Washington, so an ambiguous pronoun question still reaches the right professor. The directory
+entry scoring 0.0000 on both legs is the boilerplate problem in miniature — it matches the
+filter but carries no evidence about grading.
+
+---
+
+## Stretch 4 — Conversational Memory
+
+Multi-turn support via **history-aware query rewriting** in `rewrite_followup()`
+([src/generate.py](src/generate.py)). A follow-up like *"How are his exams structured?"* is
+un-embeddable on its own — "his" carries no retrievable content — so the rewrite happens
+**before retrieval**, not by feeding history to the generator. I chose this because the
+failure I care about is a *retrieval* failure: if the follow-up retrieves the wrong
+professor's chunks, no amount of conversational context in the generation prompt can recover
+the answer.
+
+**Grounding is preserved.** The rewriter runs on a separate, restricted system prompt, is
+shown the conversation history and **no documents at all**, and is instructed to resolve
+references only — never to answer, and never to add facts. The grounded `SYSTEM_PROMPT` and
+the computed source list are unchanged. In the UI, memory is a toggle and the resolved
+question is displayed under **Retrieval detail → Conversation memory**, so a viewer can see
+what the system did with their pronoun.
+
+**Multi-turn transcript.**
+
+```text
+Turn 1 — "What do students say about Jeremy Blackstone?"
+
+Answer: [mixed experiences — two positive reviews and one negative outlier...]
+Sources: 1. professor_1.txt — RateMyProfessors (Jeremy Blackstone, ...)
+
+
+Turn 2 — "How are his exams structured?"
+```
+
+Turn 2 retrieval, **without** memory — the pronoun anchors on nothing, and the top hit is
+Jiang Li:
+
+| Rank | Source file |
+|---|---|
+| 1 | professor_2.txt ✗ |
+| 2 | professor_1.txt |
+| 3 | professor_4.txt ✗ |
+| 4 | professor_2.txt ✗ |
+| 5 | professor_6.txt ✗ |
+
+Turn 2 **with** memory — the follow-up is rewritten first:
+
+```text
+Original follow-up:       How are his exams structured?
+Rewritten for retrieval:  How are Jeremy Blackstone's exams structured?
+```
+
+| Rank | Chunk | Source file |
+|---|---|---|
+| 1 | `professor_1::review_1` | professor_1.txt |
+| 2 | `professor_1::review_3` | professor_1.txt |
+| 3 | `professor_1::review_2` | professor_1.txt |
+| 4 | `professor_4::review_3` | professor_4.txt |
+| 5 | `professor_2::review_1` | professor_2.txt |
+
+```text
+Answer:
+According to a student review, Professor Jeremy Blackstone's exams are formatted the same way
+as his homework assignments — students take exams that follow the same structure and style as
+the regular homework problems. [professor_1::review_1]
+
+Sources:
+1. professor_1.txt — RateMyProfessors (Jeremy Blackstone, Computer Science / Electrical Engineering and Computer Science)
+```
+
+**Blackstone chunks retrieved: 1 of 5 without memory, 3 of 5 with memory.** The answer names
+Blackstone and cites his review file, and the cited claim ("exams follow the same structure as
+the homework") appears in `professor_1::review_1` and nowhere else. This is memory doing real
+work, not topic overlap — the un-rewritten query's top hit was a different professor entirely.
+
+**An honest limitation.** The follow-up *"Is he a hard grader?"* rewrites correctly to *"Is
+Professor Jeremy Blackstone a hard grader?"* and retrieves Blackstone chunks at ranks 1 and 3,
+but the system then **refuses**: no review states his grading difficulty directly, though
+several mention "clear grading criteria" and "extra credit." The rewriting worked and
+retrieval worked; the corpus genuinely does not answer that question, and the system declined
+rather than inferring. I consider that correct behaviour, but it does mean a demo of this
+feature has to pick a follow-up the documents actually support.
+
+---
+
+## Post-Stretch Evaluation
+
+Re-running all 5 evaluation questions end-to-end with hybrid retrieval as the default:
+
+| # | Question | Baseline (semantic) | After stretch features | Change |
+|---|---|---|---|---|
+| 1 | Jiang Li's grading and exams | accurate | accurate | precision@5 0.80 → 1.00 |
+| 2 | Jeremy Blackstone | **partially accurate** | **accurate** | **fixed** — all 3 reviews retrieved and cited, negative one included |
+| 3 | Course registration problems | partially accurate | **partially accurate** | unchanged — see below |
+| 4 | Gloria Washington | accurate | accurate | correct professor now ranks 1st instead of 2nd |
+| 5 | Georgetown (out of scope) | accurate (refusal) | accurate (refusal) | no regression |
+
+**Result: 4 accurate, 1 partially accurate** (baseline was 3 accurate, 2 partially accurate).
+
+**Question 3 remains a failure, and hybrid search did not fix it — because it was never a
+retrieval failure.** The expected answer in planning.md names BisonHub and unassigned
+professors/classrooms. `hilltop_article_2.txt` — the BisonHub article — **is retrieved**, at
+rank 3 under semantic and rank 3 under hybrid, and under hybrid it even appears in the
+computed source list. The generator simply does not use it: all four bullets in the answer
+come from ranks 1 and 2, and BisonHub is never mentioned. So this is a **generation-stage
+failure**, distinct from the chunking-stage failure documented for Question 2.
+
+My read on the cause: the article's chunk is ~230 words covering four distinct sub-topics
+(missing professors, changed meeting times, the Solutions Hub, Coursedog data entry), and it
+is the third of three long article chunks in the context window. The model appears to
+summarize from the highest-ranked context and stop once it has four well-supported bullets,
+rather than exhaustively covering every retrieved chunk. Plausible fixes I did **not**
+implement: instructing the model to account for every retrieved chunk or explicitly note
+which it did not use; reranking so the BisonHub chunk is not last; or splitting that article
+into per-sub-topic chunks so its distinct claims compete individually for the model's
+attention. That last one is the same argument as Stretch 2 — chunk structure should follow
+content structure — applied to a document I chose not to split.

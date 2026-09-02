@@ -178,7 +178,7 @@ I will use Claude to implement the generation step using openai/gpt-oss-120b. I 
 
 My baseline evaluation surfaced one clear root cause: every RateMyProfessors review chunk
 opens with a near-identical header block (professor, department, source URL, aggregate
-stats), and across 24 review chunks that boilerplate dominates the embedding. The result is
+stats), and across 23 review chunks that boilerplate dominates the embedding. The result is
 that the professor's *name* — the single most discriminative token in a query like "What do
 students say about Jeremy Blackstone?" — carries less weight than it should, and chunks from
 unrelated professors outrank the correct ones. Every stretch feature below is chosen to
