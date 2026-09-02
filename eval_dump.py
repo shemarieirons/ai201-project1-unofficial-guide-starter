@@ -89,8 +89,10 @@ def main() -> None:
     print()
 
     for question in QUESTIONS:
+        # Pinned to semantic-only: this is the baseline evaluation reported in the README,
+        # and it must stay reproducible after hybrid search became the runtime default.
         retrieved = retrieve(question, top_k=DEFAULT_TOP_K)
-        generated = generate_answer(question, top_k=DEFAULT_TOP_K)
+        generated = generate_answer(question, top_k=DEFAULT_TOP_K, method="semantic")
 
         markdown_sections.append(_format_question_section(question, retrieved, generated, total_chunks))
 

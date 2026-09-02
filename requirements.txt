@@ -4,6 +4,9 @@ groq==0.15.0
 python-dotenv==1.0.1
 gradio>=6.9.0
 
+# Stretch feature — BM25 keyword scoring for hybrid search
+rank-bm25==0.2.2
+
 # Query interface — add whichever you use for Milestone 5:
 # streamlit>=1.40.0
 

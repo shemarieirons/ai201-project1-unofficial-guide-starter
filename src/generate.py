@@ -15,6 +15,7 @@ from groq import Groq
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from src.hybrid import DEFAULT_ALPHA, hits_to_results, search
 from src.retrieve import retrieve
 from src.vector_store import DEFAULT_TOP_K
 
@@ -22,6 +23,20 @@ from src.vector_store import DEFAULT_TOP_K
 ROOT_DIR = Path(__file__).resolve().parents[1]
 MODEL_NAME = "openai/gpt-oss-120b"
 INSUFFICIENT_INFO_RESPONSE = "I don't have enough information in the provided sources to answer that question."
+DEFAULT_METHOD = "hybrid"
+
+# Resolves a follow-up into a standalone question so it can be embedded. Kept separate from
+# SYSTEM_PROMPT and given no document context at all, so it cannot introduce facts — its
+# only job is pronoun and reference resolution.
+REWRITE_SYSTEM_PROMPT = """You rewrite a follow-up question into a standalone question.
+
+Rules:
+- Use the conversation history only to resolve references like "he", "she", "that class", "there".
+- Do not answer the question.
+- Do not add any facts, names, or details that do not appear in the history or the question.
+- If the follow-up is already standalone, return it unchanged.
+- Return only the rewritten question, with no preamble or explanation.
+"""
 
 SYSTEM_PROMPT = """You are a grounded question-answering assistant for Howard University course and professor documents.
 
@@ -155,13 +170,59 @@ def build_retrieved_context(chunks: list[dict[str, Any]]) -> str:
     return "Retrieved context:\n\n" + "\n\n---\n\n".join(formatted_chunks)
 
 
-def generate_answer(question: str, top_k: int = DEFAULT_TOP_K) -> dict[str, Any]:
-    results = retrieve(question, top_k=top_k)
+def rewrite_followup(question: str, history: list[tuple[str, str]], client: Groq) -> str:
+    """Rewrite a follow-up into a standalone question using prior turns.
+
+    A follow-up like "Is he a hard grader?" carries no retrievable content on its own, so
+    rewriting happens before retrieval — if the follow-up retrieves the wrong chunks, no
+    amount of conversational context in the generation prompt can recover the answer.
+    """
+    if not history:
+        return question
+
+    transcript = "\n".join(
+        f"User: {previous_question}\nAssistant: {previous_answer}"
+        for previous_question, previous_answer in history[-3:]
+    )
+    completion = client.chat.completions.create(
+        model=MODEL_NAME,
+        temperature=0,
+        messages=[
+            {"role": "system", "content": REWRITE_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": f"Conversation so far:\n{transcript}\n\nFollow-up question:\n{question}",
+            },
+        ],
+    )
+    rewritten = (completion.choices[0].message.content or "").strip()
+    return rewritten or question
+
+
+def generate_answer(
+    question: str,
+    top_k: int = DEFAULT_TOP_K,
+    method: str = DEFAULT_METHOD,
+    where: dict[str, Any] | None = None,
+    history: list[tuple[str, str]] | None = None,
+    alpha: float = DEFAULT_ALPHA,
+) -> dict[str, Any]:
+    client = load_groq_client()
+
+    search_question = question
+    if history:
+        search_question = rewrite_followup(question, history, client)
+
+    if method == "semantic" and not where:
+        results = retrieve(search_question, top_k=top_k)
+    else:
+        results = hits_to_results(
+            search(search_question, top_k=top_k, method=method, alpha=alpha, where=where)
+        )
+
     chunks = extract_retrieved_chunks(results)
     context = build_retrieved_context(chunks)
     sources_text = build_sources_text(chunks)
-
-    client = load_groq_client()
     completion = client.chat.completions.create(
         model=MODEL_NAME,
         temperature=0,
@@ -187,6 +248,8 @@ def generate_answer(question: str, top_k: int = DEFAULT_TOP_K) -> dict[str, Any]
         sources_text = "None — the retrieved sources do not contain enough information to answer the question."
         return {
             "question": question,
+            "search_question": search_question,
+            "method": method,
             "answer": answer_text,
             "sources": sources_text,
             "chunks": chunks,
@@ -202,6 +265,8 @@ def generate_answer(question: str, top_k: int = DEFAULT_TOP_K) -> dict[str, Any]
 
     return {
         "question": question,
+        "search_question": search_question,
+        "method": method,
         "answer": answer_text,
         "sources": sources_text,
         "chunks": chunks,
@@ -210,11 +275,12 @@ def generate_answer(question: str, top_k: int = DEFAULT_TOP_K) -> dict[str, Any]
 
 
 def format_cli_output(result: dict[str, Any]) -> str:
-    return (
-        f"Question: {result['question']}\n\n"
-        f"Answer:\n{result['answer']}\n\n"
-        f"Sources:\n{result['sources']}"
-    )
+    lines = [f"Question: {result['question']}"]
+    if result.get("search_question") and result["search_question"] != result["question"]:
+        lines.append(f"Rewritten for retrieval: {result['search_question']}")
+    lines.append(f"\nAnswer:\n{result['answer']}")
+    lines.append(f"\nSources:\n{result['sources']}")
+    return "\n".join(lines)
 
 
 def main() -> None:
@@ -222,13 +288,27 @@ def main() -> None:
     parser.add_argument("question", nargs="?", help="Question to answer")
     parser.add_argument("--top-k", type=int, default=DEFAULT_TOP_K, help="Number of chunks to retrieve")
     parser.add_argument("--json", action="store_true", help="Print the result as JSON")
+    parser.add_argument(
+        "--method",
+        choices=["semantic", "bm25", "hybrid"],
+        default=DEFAULT_METHOD,
+        help="Retrieval method (default: hybrid)",
+    )
+    parser.add_argument("--professor", help="Metadata filter: restrict to one professor")
+    parser.add_argument("--source", help="Metadata filter: restrict to one source")
     args = parser.parse_args()
 
     question = args.question or input("Enter a question: ").strip()
     if not question:
         raise ValueError("A question is required.")
 
-    result = generate_answer(question, top_k=args.top_k)
+    where: dict[str, Any] = {}
+    if args.professor:
+        where["professor"] = args.professor
+    if args.source:
+        where["source"] = args.source
+
+    result = generate_answer(question, top_k=args.top_k, method=args.method, where=where or None)
     if args.json:
         print(json.dumps(result, ensure_ascii=True, indent=2))
     else:
