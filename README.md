@@ -1,277 +1,83 @@
 # The Unofficial Guide — Project 1
 
-> **How to use this template:**
-> Complete each section *after* you've built and tested the corresponding part of your system.
-> Do not write placeholder text — if a section isn't done yet, leave it blank and come back.
-> Every section below is required for submission. One-liners will not receive full credit.
-
----
-
-## Domain
-
-<!-- What topic or category of knowledge does your system cover?
-     Why is this knowledge valuable, and why is it hard to find through official channels?
-     Example: "Student reviews of CS professors at [university] — useful because official
-     course descriptions don't reflect teaching style, exam difficulty, or workload." -->
-
----
+## Overview
+This project covers Howard University course and professor guidance. It answers questions using a corpus of student reviews, Howard’s EECS faculty directory, and The Hilltop articles. The system is a retrieval-augmented generation pipeline, so answers are grounded in retrieved documents rather than outside knowledge.
 
 ## Document Sources
-
-<!-- List every source you collected documents from.
-     Be specific: include URLs, subreddit names, forum thread titles, or file names.
-     Aim for variety — sources that together cover different subtopics or perspectives. -->
-
 | # | Source | Type | URL or file path |
-|---|--------|------|-----------------|
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
-| 6 | | | |
-| 7 | | | |
-| 8 | | | |
-| 9 | | | |
-| 10 | | | |
+|---|---|---|---|
+| 1 | Jeremy Blackstone | RateMyProfessors | data/professor_1.txt |
+| 2 | Jiang Li | RateMyProfessors | data/professor_2.txt |
+| 3 | Gloria Washington | RateMyProfessors | data/professor_3.txt |
+| 4 | Noha Hazzazi | RateMyProfessors | data/professor_4.txt |
+| 5 | Anamika Rupa | RateMyProfessors | data/professor_5.txt |
+| 6 | John Harris | RateMyProfessors | data/professor_6.txt |
+| 7 | EECS faculty directory | Howard official directory | data/faculty_directory_eecs.txt |
+| 8 | Spring registration delays | The Hilltop | data/hilltop_article_1.txt |
+| 9 | Unassigned professors/classrooms | The Hilltop | data/hilltop_article_2.txt |
+| 10 | Enrollment growth and staffing | The Hilltop | data/hilltop_article_3.txt |
 
----
+## Architecture
+Source Documents → Document Ingestion / Cleaning → Chunking → Embeddings → ChromaDB → Semantic Retrieval (Top 5) → Retrieved Context → Groq LLM → Grounded Answer + Sources → Gradio Interface
 
-## Chunking Strategy
+## Ingestion and Chunking
+RateMyProfessors files are chunked one review per chunk with no overlap. This preserves each student opinion as a complete unit.
 
-<!-- Describe your chunking approach with enough specificity that someone else could reproduce it.
-     Include:
-     - Chunk size (characters or tokens) and why that size fits your documents
-     - Overlap size and why (or why not) you used overlap
-     - Any preprocessing you did before chunking (e.g., stripping HTML, removing headers)
-     - What your final chunk count was across all documents -->
+The Hilltop articles are chunked at approximately 300 tokens with approximately 50 tokens of overlap where needed. This fits longer news articles and helps keep related reporting together across paragraph boundaries.
 
-**Chunk size:**
+The EECS directory is chunked one faculty entry per chunk with no overlap. This keeps the structured roster data intact.
 
-**Overlap:**
-
-**Why these choices fit your documents:**
-
-**Final chunk count:**
-
----
+Before chunking, the ingester normalizes whitespace and line breaks and adds source metadata to each chunk. The final corpus contains 47 chunks.
 
 ## Sample Chunks
-
-<!-- Paste 5 representative chunks from your document collection after running your ingestion pipeline.
-     For each chunk, note which source document it came from.
-     These must be actual text — not screenshots. -->
-
 | # | Source document | Chunk text |
-|---|----------------|------------|
-| 1 | professor_jeremy_blackstone.txt | **Rate My Professors: Jeremy Blackstone** — Describes him as the most simplistic and straightforward professor the reviewer has had. Says all assignments are posted at the beginning of the course, are not numerous or difficult, and students can work at their own pace while following lectures if needed. Notes that if you already know C++, the course plays like a review. Exams follow the same structure as the homework. Calls it the most carefree class they've taken, taking up little time. Tags: extra credit, clear grading criteria, graded by few things. |
+|---|---|---|
+| 1 | professor_1.txt | Professor: Jeremy Blackstone; Review 2: “Calls him the best computer science professor the reviewer has had… genuinely wants students to learn… sets them up for their career beyond Howard.” |
+| 2 | professor_2.txt | Professor: Jiang Li; Review 1: “Describes the class as very hard… online homework as the worst part… Exams mirror the homework format with different numbers.” |
+| 3 | faculty_directory_eecs.txt | Source: Howard University EECS faculty directory; Faculty: Jeremy Blackstone; jeremy.m.blackstone@howard.edu |
+| 4 | hilltop_article_1.txt | Students reported having to refresh the registration website repeatedly because new seats open without notification. |
+| 5 | hilltop_article_2.txt | Multiple students reported courses with no assigned professor or classroom, and manual input in Coursedog was a contributing factor. |
 
-| 2 | professor_jiang_li.txt | **Rate My Professors: Jiang Li** — Review describes the grading as unclear and difficult to understand. The reviewer says the lectures do not match the homework or exams and expresses frustration with the course structure. The reviewer recommends against taking the course with him. |
+## Embeddings and Retrieval
+The embedding model is `all-MiniLM-L6-v2` through `sentence-transformers`. ChromaDB is the persistent vector store, and retrieval uses semantic similarity to return the top 5 chunks while preserving metadata for source attribution.
 
-| 3 | faculty_directory_eecs.txt | **Source: Howard University EECS faculty directory** — Department: Electrical Engineering and Computer Science. Faculty: Charles Kim, Ph.D. Email: ckim@Howard.edu |
-
-| 4 | hilltop_article_1.txt | **The Hilltop — Article on registration delays for Spring semester** — Students reported problems with BisonHub and delays during Spring course registration, including issues with course information and difficulty registering for classes. |
-
-| 5 | hilltop_article_2.txt | **The Hilltop — Article on unassigned professors/classrooms at semester start** — Students experienced confusion during the first week of classes because some courses did not yet have professors or classrooms assigned. The situation created uncertainty for students trying to determine where and with whom they would attend class. |
-
----
-
-## Embedding Model
-
-<!-- Name the embedding model you used and explain your choice.
-     Then answer: if you were deploying this system for real users and cost wasn't a constraint,
-     what tradeoffs would you weigh in choosing a different model?
-     Consider: context length limits, multilingual support, accuracy on domain-specific text,
-     latency, and local vs. API-hosted. -->
-
-**Model used:**
-
-**Production tradeoff reflection:**
-
----
-
-## Retrieval Test Results
-
-<!-- Run these 3 queries through your retrieval system and record the top returned chunks.
-     For at least 2 of the 3, explain why the returned chunks are relevant to the query.
-     Results must be text — not screenshots. -->
-
-**Query 1:**
-
-Top returned chunks:
--
--
--
-
-Relevance explanation:
-
----
-
-**Query 2:**
-
-Top returned chunks:
--
--
--
-
-Relevance explanation:
-
----
-
-**Query 3:**
-
-Top returned chunks:
--
--
--
-
-Relevance explanation:
-
----
+Retrieval testing showed the expected behavior for the Jiang Li query, which returned relevant grading and exam chunks. The Jeremy Blackstone query returned one relevant review first, but it also brought in unrelated cross-professor chunks, which contributed to the documented failure. The Howard registration query returned relevant Hilltop chunks about delays, missing notifications, and staffing problems.
 
 ## Grounded Generation
+Groq is used for generation. The LLM receives only the retrieved context, and the prompt instructs it not to use outside knowledge, not to invent facts, to acknowledge disagreement when reviews conflict, and to refuse when the retrieved context is insufficient.
 
-<!-- Explain how your system enforces grounding — how does it prevent the LLM from answering
-     beyond the retrieved documents?
-     Describe both your system prompt (what instruction you gave the model) and any structural
-     choices (e.g., how you formatted the context, whether you filtered low-relevance chunks).
-     Do not just say "I told it to use the documents" — show the actual instruction or explain
-     the mechanism. -->
-
-**System prompt grounding instruction:**
-
-**How source attribution is surfaced in the response:**
-
----
-
-## Example Responses
-
-<!-- Provide at least 2 grounded responses (query + response + source attribution)
-     and 1 out-of-scope query showing your system's refusal.
-     All entries must be text — not screenshots. -->
-
-**Grounded response 1**
-
-Query:
-
-Response:
-
-Source attribution:
-
----
-
-**Grounded response 2**
-
-Query:
-
-Response:
-
-Source attribution:
-
----
-
-**Out-of-scope query**
-
-Query:
-
-System response (refusal):
-
----
+Source attribution comes from the retrieved chunk metadata, and cited chunk IDs are used to form the returned source list. Out-of-scope questions are refused with the insufficient-information response.
 
 ## Query Interface
+The Gradio interface has a question input, a submit action, a grounded answer field, and a supporting sources field.
 
-<!-- Describe your query interface: what are the input fields, what does the output look like?
-     Then provide a complete sample interaction transcript showing a real exchange. -->
-
-**Input fields:**
-
-**Output format:**
-
----
-
-**Sample Interaction Transcript**
-
-<!-- Show a complete query → response exchange as it actually appears in your interface.
-     Must be text — not a screenshot. -->
-
-> **User:** 
-
-> **System:** 
-
----
+For an out-of-scope example, the Georgetown question returns the refusal message: “I don't have enough information in the provided sources to answer that question.”
 
 ## Evaluation Report
+| # | Question | Ground Truth | Actual Answer | Judgment |
+|---|---|---|---|---|
+| 1 | What do students say about Jiang Li’s grading and exams? | Reviews describe harsh, unclear grading, very difficult homework, exams that mirror homework, and lecture material that does not always match what is tested. | The answer says grading is strict and opaque, homework is heavy, and exams mirror homework and sometimes test material not covered in lecture. | Pass |
+| 2 | What do students say about Jeremy Blackstone? | Reviews are mostly positive and career-focused, but there is also at least one negative comment about slow grading and disorganization near finals. | The answer describes him as very positive and useful for career preparation, but it omits the negative review. | Fail |
+| 3 | What problems have students experienced with course registration at Howard? | Students report delayed access to classes, no seat-open notifications, unclear communication, advisor problems, and stress about graduation timing. | The answer covers registration delays, lack of notifications, advising gaps, and enrollment pressure. | Pass |
+| 4 | Do students have consistent opinions about Gloria Washington? | No. The reviews are mixed, with negative comments about exact-answer grading and positive comments about fairness and extra credit. | The answer says opinions are mixed and contrasts a negative review with a positive one. | Pass |
+| 5 | What contributed to registration and staffing problems at Howard? | Rising enrollment, faculty turnover, manual Coursedog data entry, advisor availability problems, and weak registration communication all contributed. | The answer lists the same structural causes and connects them to staffing and registration delays. | Pass |
 
-<!-- Run your 5 test questions from planning.md through your system and record the results.
-     Be honest — a partially accurate or inaccurate result that you explain well is more
-     valuable than a suspiciously perfect result. -->
-
-| # | Question | Expected answer | System response (summarized) | Retrieval quality | Response accuracy |
-|---|----------|-----------------|------------------------------|-------------------|-------------------|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
-| 4 | | | | | |
-| 5 | | | | | |
-
-**Retrieval quality:** Relevant / Partially relevant / Off-target  
-**Response accuracy:** Accurate / Partially accurate / Inaccurate
-
----
+The results include four passes and one documented failure.
 
 ## Failure Case Analysis
+The Jeremy Blackstone case is a retrieval failure, not a hallucination or generation failure. The corpus contained both positive and negative student reviews for Jeremy Blackstone, and the negative review exists in `professor_1.txt`. That negative review was not included in the top-5 retrieved chunks for the evaluation query, so the generator only had positive evidence available in its retrieved context. The generated answer was grounded in the retrieved evidence, but it was incomplete relative to the full corpus and overstated the overall student consensus.
 
-<!-- Identify at least one question where retrieval or generation did not work as expected.
-     Write a specific explanation of *why* it failed, tied to a part of the pipeline.
-
-     "The answer was wrong" is not an explanation.
-
-     "The relevant information was split across a chunk boundary, so retrieval returned
-     only half the context — the model didn't have enough to answer correctly" is an explanation.
-
-     "The embedding model treated the professor's nickname as out-of-vocabulary and returned
-     results from an unrelated review" is an explanation. -->
-
-**Question that failed:**
-
-**What the system returned:**
-
-**Root cause (tied to a specific pipeline stage):**
-
-**What you would change to fix it:**
-
----
+A reasonable improvement would be better same-professor coverage, reranking, metadata filtering, or another retrieval strategy. Those improvements were not implemented for this assignment.
 
 ## Spec Reflection
+The implementation stays aligned with `planning.md`. It uses the planned ingestion and cleaning, deliberate chunking, sentence-transformer embeddings, ChromaDB, top-5 semantic retrieval, Groq generation, grounded answers, source attribution, and the Gradio interface.
 
-<!-- Reflect on how planning.md shaped your implementation.
-     Answer both questions with at least 2–3 sentences each. -->
-
-**One way the spec helped you during implementation:**
-
-**One way your implementation diverged from the spec, and why:**
-
----
+The evaluation also follows the planned workflow: five test questions, document-based ground truth, actual generated answers, and an explicit pass/fail judgment for each case.
 
 ## AI Usage
+AI tools were used to inspect the project specification and planning document, assist with implementation and debugging, inspect retrieval outputs, and help structure the evaluation documentation.
 
-<!-- Describe at least 2 specific instances where you used an AI tool during this project.
-     For each: what did you give the AI as input, what did it produce, and what did you
-     change, override, or direct differently?
+The evaluation results were checked against the actual retrieved outputs and source documents rather than accepted blindly from AI.
 
-     "I used Claude to help me code" is not sufficient.
-     "I gave Claude my Chunking Strategy section from planning.md and asked it to implement
-     chunk_text(). It returned a function using a fixed character split. I overrode the
-     chunk size from 500 to 200 because my documents are short reviews, not long guides." -->
-
-**Instance 1**
-
-- *What I gave the AI:*
-- *What it produced:*
-- *What I changed or overrode:*
-
-**Instance 2**
-
-- *What I gave the AI:*
-- *What it produced:*
-- *What I changed or overrode:*
+## Production Reflection
+Possible future improvements would include a stronger or larger embedding model, reranking, better same-entity retrieval coverage, hybrid retrieval, and metadata filtering. These are not implemented stretch features in this submission.
