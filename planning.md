@@ -168,3 +168,91 @@ I will use Claude to implement the embedding and retrieval pipeline using all-Mi
 
 **Milestone 5 — Generation and interface:**
 I will use Claude to implement the generation step using openai/gpt-oss-120b. I will give it the Retrieval Approach, Evaluation Plan, and grounding requirements. The generated answer should only use the retrieved documents, identify conflicting opinions, and say when the collection does not contain enough information. I will verify the final answers against the expected answers in the evaluation table and manually inspect whether the responses are properly grounded in the retrieved sources.
+
+---
+
+## Stretch Feature Plan
+
+<!-- Added before implementing stretch features, per the assignment instruction to update
+     planning.md before starting each one. -->
+
+My baseline evaluation surfaced one clear root cause: every RateMyProfessors review chunk
+opens with a near-identical header block (professor, department, source URL, aggregate
+stats), and across 24 review chunks that boilerplate dominates the embedding. The result is
+that the professor's *name* — the single most discriminative token in a query like "What do
+students say about Jeremy Blackstone?" — carries less weight than it should, and chunks from
+unrelated professors outrank the correct ones. Every stretch feature below is chosen to
+attack that specific failure rather than to add unrelated surface area.
+
+### 1. Hybrid Search (BM25 + semantic)
+
+**Why this one first:** my documented failure is a *lexical* failure wearing a semantic
+costume. A proper noun like "Blackstone" is exactly what BM25 is good at and exactly what a
+384-dimension dense embedding smears out. I expect hybrid search to fix Question 2 and
+Question 4 specifically.
+
+**How I will combine the scores:** min-max normalize each score list to [0, 1] across the
+full 47-chunk corpus, then take a weighted sum:
+
+```
+hybrid_score = alpha * normalized_semantic_similarity + (1 - alpha) * normalized_bm25_score
+```
+
+I will start at `alpha = 0.5`. I chose weighted score fusion over Reciprocal Rank Fusion
+because I want to be able to read off *how much* each retriever contributed to a given hit,
+which RRF discards by throwing away the raw scores. Semantic similarity is `1 - cosine
+distance` so that both components point the same direction (higher = better). Normalization
+is required because BM25 scores are unbounded while cosine similarity is bounded to [-1, 1],
+so summing the raw values would let BM25 dominate arbitrarily.
+
+**How I will evaluate it:** run semantic-only, BM25-only, and hybrid over the same 5
+evaluation questions and report precision@5 against a hand-labeled set of which source files
+are actually relevant to each question. Question 2 additionally gets a recall measure: three
+Jeremy Blackstone review chunks exist, so I will report how many of the three each method
+retrieves in its top 5.
+
+### 2. Chunking Strategy Comparison
+
+**Second strategy:** a naive fixed-size character splitter (1000 characters, 150-character
+overlap, no respect for review or entry boundaries) built into a separate ChromaDB
+collection, so the two strategies can be queried side by side without re-ingesting.
+
+**Hypothesis:** my structure-aware strategy should win on the per-professor questions
+because it guarantees one complete review per chunk and re-attaches the professor's name to
+every chunk. The fixed-size splitter will merge the tail of one professor's reviews into the
+head of the next file's chunk and will strand reviews that no longer name their professor.
+I expect the fixed-size strategy to look *deceptively* competitive on precision@5 measured
+at file level, so I will also inspect whether its chunks are self-contained.
+
+**Evaluation:** same precision@5 harness and same 5 questions, so the only variable is the
+chunking.
+
+### 3. Metadata Filtering
+
+Every chunk already carries `source`, `document_type`, and `professor` metadata from
+ingestion, so this is a matter of exposing it. I will add an optional `where` filter that
+passes through to ChromaDB's native filtering, plus the same predicate applied to the BM25
+candidate set so hybrid search honors filters too. In the interface I will expose a source
+filter (RateMyProfessors / The Hilltop / Howard EECS directory) and a professor filter.
+
+**Verifiable effect:** the query "What problems have students experienced with course
+registration at Howard?" unfiltered returns Hilltop chunks plus two professor-review chunks
+as noise. Filtered to `source = The Hilltop`, the professor-review noise must disappear.
+
+### 4. Conversational Memory
+
+**Approach:** history-aware query rewriting rather than stuffing raw history into the
+generation prompt. A follow-up like "Is he a hard grader?" is un-embeddable on its own — it
+contains no retrievable content — so before retrieval I will use the LLM to rewrite the
+follow-up into a standalone question using the previous turns ("Is Jeremy Blackstone a hard
+grader?"), then retrieve on the rewritten text.
+
+I chose rewriting over passing history to the generator because the failure I care about is
+a *retrieval* failure: if the follow-up retrieves the wrong chunks, no amount of
+conversational context in the generation prompt can recover the answer. Grounding must
+survive this — the rewriter is only allowed to resolve references, never to add facts, and
+the grounded system prompt stays unchanged.
+
+**Verifiable effect:** turn 1 "What do students say about Jeremy Blackstone?" then turn 2
+"Is he a hard grader?" must retrieve Blackstone chunks, not chunks about whichever professor
+is lexically nearest to the word "grader."
