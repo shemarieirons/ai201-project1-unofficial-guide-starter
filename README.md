@@ -802,57 +802,26 @@ triggers it, so the spec describes a mechanism the live system does not currentl
 
 ## AI Usage
 
-> The two instances below describe how I directed Claude during implementation. Both are tied
-> to specific code that is in the repository.
+> The two instances below describe how I directed GitHub Copilot during implementation. Both
+> are tied to specific code that is in the repository.
 
-**Instance 1 — the ingestion and chunking module (`src/ingest.py`)**
+Instance 1 — the ingestion and chunking module (src/ingest.py)
 
-- *What I gave the AI:* the Documents and Chunking Strategy sections of my planning.md, plus
-  the pipeline diagram, plus two actual sample files (`professor_2.txt` and
-  `hilltop_article_1.txt`) so it could see the real `---` review delimiters and header format
-  rather than guessing at my structure. My instruction was to implement three separate
-  parsers behind one type-detecting entry point, not one generic splitter with flags.
-- *What it produced:* a working three-way parser, but with two things I did not accept. First,
-  it proposed detecting document type from the filename prefix alone (`professor_`,
-  `hilltop_article_`). Second, it produced no verification of its own output — it trusted the
-  regex split.
-- *What I changed or overrode:* I made type detection read the file's **content** first
-  (`^Professor:`, `^Source Type: Official Howard University department page`, `^Title:` plus a
-  "The Hilltop" match) and kept the filename check only as a fallback, because filename-based
-  detection would silently mis-parse any document I renamed. I also added
-  `validate_chunks()`, which raises before embedding if any chunk is empty, if a review chunk
-  contains anything other than exactly one `Review N` heading, if a review or directory chunk
-  has lost its professor name, or if the directory collapsed to a single chunk. That check is
-  what let me trust the 47-chunk count instead of eyeballing it. I additionally added the
-  `ARTICLE_MIN_TAIL_TOKENS = 100` tail-merge rule, which was not in my plan, after reasoning
-  that a 20-word orphan paragraph as its own chunk would be worse than a slightly oversized
-  final chunk.
+What I gave the AI: the assignment requirements, my planning.md, especially the Ingestion and Chunking Strategy sections, and the existing project structure and source documents. I instructed GitHub Copilot to implement the ingestion pipeline according to my planned document-specific strategies rather than changing the overall architecture. I also specified that the system needed to handle the RateMyProfessors reviews, The Hilltop articles, and the EECS faculty directory differently.
 
-**Instance 2 — source attribution in `src/generate.py`**
+What it produced: an ingestion pipeline that loaded the 10 source documents, cleaned the text, detected the document type, created the appropriate chunks, attached metadata, and reported the resulting chunk counts and samples.
 
-- *What I gave the AI:* my grounding requirement (answer from retrieved context only, cite
-  sources) and the desired output shape of answer plus source list.
-- *What it produced:* a version that asked the model to write its own source list at the end
-  of the answer, and parsed that text back out.
-- *What I changed or overrode:* I rejected that design, because a hallucinated source line is
-  worse than no source line — the whole point of citations is that they can be trusted. I
-  restructured it so the source list is **computed in Python** by `build_sources_text()` from
-  the retrieved chunks' metadata, and the model's only citation job is to emit chunk IDs
-  inline. `extract_cited_chunk_ids()` then looks each ID up in the retrieved set and narrows
-  the list to the cited files, silently dropping any ID the model invented. I also widened
-  that regex to accept `【...】` full-width brackets after observing that
-  `openai/gpt-oss-120b` emits those instead of the ASCII `[...]` I had asked for — the
-  citations were being parsed as zero matches until I handled the unicode form.
-- *A later correction of my own:* the refusal branch originally tested
-  `if INSUFFICIENT_INFO_RESPONSE in answer_text`, a substring check. A code review pointed out
-  that a partial answer beginning "I don't have enough information ... about X, but reviewers
-  do say Y" would match and wipe a legitimate source list. I replaced it with `is_refusal()`,
-  which only matches when the refusal sentence is the entire answer.
+What I changed or overrode: I reviewed the generated implementation and its output rather than accepting it as-is. I corrected the faculty-directory chunking because the initial output repeated too much of the directory header in every faculty chunk. I also made sure the metadata and validation matched my specification and verified that the final corpus contained 47 chunks. I then inspected actual sample chunks to confirm that the output preserved the information needed for retrieval.
 
-**Where I did not use AI:** planning.md is my own work, per the assignment's guardrail. I
-also wrote the failure-case root-cause analysis myself, from reading the distance spreads in
-`eval_output.md` — the boilerplate-dilution explanation came from noticing that the top five
-Query 2 results span only 0.02, then going back to look at what those chunks have in common.
+Instance 2 — embeddings, retrieval, and grounded generation (src/embed.py, src/vector_store.py, src/retrieve.py, and src/generate.py)
+
+What I gave the AI: my Embedding, Vector Store, Retrieval, and Grounded Response Generation sections from planning.md, including the required all-MiniLM-L6-v2 model, persistent ChromaDB vector store, top-5 semantic retrieval, Groq generation, grounding requirements, refusal behavior, and source attribution. I also gave it the evaluation questions I planned to use to test the system.
+
+What it produced: GitHub Copilot implemented the embedding and ChromaDB pipeline, connected retrieval to the same embedding model, and then built the Groq generation layer around the retrieved context. It also added the Gradio interface and source attribution so the complete pipeline could be tested end-to-end.
+
+What I changed or overrode: I tested the retrieval results using my planned questions instead of assuming that semantic search was working correctly. I also tested an out-of-scope Georgetown question and required the system to refuse it rather than answer using outside knowledge. During generation, I reviewed the source-attribution behavior and had the implementation corrected so sources were derived from the retrieved chunk metadata rather than being freely generated by the LLM. I also tested the final answers against the source documents and documented the Jeremy Blackstone retrieval failure rather than hiding it or changing the evaluation to make the system appear more successful.
+
+Where I did not use AI: planning.md, including the domain selection, architecture, chunking strategy, embedding/retrieval decisions, and evaluation questions, was my own planning work. I also independently reviewed the generated outputs against the source documents and made the final decisions about whether the implementation satisfied the specification.
 
 ---
 ---

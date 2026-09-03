@@ -161,13 +161,13 @@ Gradio Interface
      with my specified chunk size and overlap" is a plan. -->
 
 **Milestone 3 — Ingestion and chunking:**
-I will use Claude to help implement the document ingestion and chunking functions. I will give it the Documents and Chunking Strategy sections of this file and ask it to implement separate handling for Rate My Professor reviews, Hilltop articles, and EECS directory entries. I will verify the output by checking the generated chunks to make sure reviews are not split, Hilltop chunks are close to 300 tokens with 50-token overlap, and directory entries remain together.
+For Milestone 3, I’ll use GitHub Copilot. I’ll give it the Ingestion and Chunking Strategy sections of my planning.md, along with the Milestone 3 requirements, and ask it to implement the document loading, cleaning, document-specific chunking, and metadata handling. I expect it to produce the ingestion pipeline in ingest.py and the required validation output. I’ll verify the result by inspecting the cleaned documents and sample chunks, checking the chunk count, and confirming that the implementation follows my planned chunking strategy.
 
 **Milestone 4 — Embedding and retrieval:**
-I will use Claude to implement the embedding and retrieval pipeline using all-MiniLM-L6-v2 and a vector index. I will give it the Retrieval Approach section and require it to use cosine similarity and return the top 5 chunks for each query. I will test it using the evaluation questions and inspect the retrieved chunks to make sure they are relevant to the question.
+For Milestone 4, I’ll use GitHub Copilot. I’ll give it the Embedding, Vector Store, and Retrieval sections of my planning.md, including my requirements for all-MiniLM-L6-v2, ChromaDB, and top-5 retrieval. I expect it to implement the embedding pipeline, persistent vector store, and semantic retrieval while preserving my chunk metadata. I’ll verify the output by running my planned evaluation questions, inspecting the retrieved chunks, and confirming that the relevant documents are being returned and that the out-of-scope Georgetown question behaves as expected for semantic retrieval.
 
 **Milestone 5 — Generation and interface:**
-I will use Claude to implement the generation step using openai/gpt-oss-120b. I will give it the Retrieval Approach, Evaluation Plan, and grounding requirements. The generated answer should only use the retrieved documents, identify conflicting opinions, and say when the collection does not contain enough information. I will verify the final answers against the expected answers in the evaluation table and manually inspect whether the responses are properly grounded in the retrieved sources.
+For Milestone 5, I’ll use GitHub Copilot. I’ll give it the Grounded Response Generation and Query Interface sections of my planning.md, along with the requirements for Groq, grounding, source attribution, refusal of unsupported questions, and Gradio. I expect it to implement the generation pipeline and a simple Gradio interface that connects to my existing retrieval system. I’ll verify the output by testing the required questions, checking that responses only use retrieved information, confirming that the correct sources are displayed, and testing the Georgetown question to make sure unsupported questions are refused.
 
 ---
 
