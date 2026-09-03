@@ -58,13 +58,13 @@ facts. The grounded system prompt is unchanged.
 ### Turn 1 — `What do students say about Jeremy Blackstone?`
 
 ```text
-Students who have posted reviews of Professor Jeremy Blackstone on RateMyProfessors share mixed experiences:
+Students who have taken classes with Jeremy Blackstone share mixed experiences:
 
-* **Positive impressions** – Two reviewers praise him highly. One calls him “the best computer‑science professor” they have had, noting that he “genuinely wants students to learn” and helps set them up for their careers beyond Howard, and mentions that participation matters, extra credit is offered, and grading criteria are clear【professor_1::review_2】. Another describes him as “the most simplistic and straightforward” professor, saying that all assignments are posted at the start of the term, are few and not difficult, and allow students to work at their own pace. This reviewer also calls the class “the most carefree” they have taken, with exams mirroring the homework and clear grading criteria【professor_1::review_1】.
+* **Positive impressions** – Two reviewers describe him very favorably. One calls him “the best computer‑science professor” they have had, noting that he “genuinely wants students to learn” and helps set them up for their careers beyond Howard, and mentions that participation matters, extra credit is offered, and grading criteria are clear【professor_1::review_2】. Another reviewer says he is “the most simplistic and straightforward professor” they’ve encountered; assignments are posted at the start of the term, are few and not difficult, and students can work at their own pace while following lectures if needed. The reviewer adds that the class feels “carefree,” with exams mirroring the homework and the workload taking little time【professor_1::review_1】.
 
-* **Negative impression** – A third reviewer, who labels their comment as an outlier, reports a very different experience. They say the semester was “embarrassingly disorganized,” with only one assignment graded by finals week, “lazy” lecture slides, and a mishap where the professor posted the wrong final exam and then changed the exam questions without clearly informing students【professor_1::review_3】.
+* **Negative impression** – A third reviewer, who labels their comment as an outlier compared with the other reviews, reports a very different experience. They describe the semester as “embarrassingly disorganized,” noting that by finals week only one assignment had been graded, the lecture slides were “lazy PPTs,” the professor posted the wrong final exam, and then altered the exam questions without clearly communicating the changes to students【professor_1::review_3】.
 
-Thus, while most student reviews highlight Blackstone’s clear organization, supportive attitude, and straightforward coursework, at least one student felt the class was poorly managed and confusing.
+Thus, while most student feedback highlights Blackstone’s clear organization, supportive grading practices, and career‑focused attitude, at least one student has experienced significant disorganization and communication issues in a senior‑level course.
 
 Sources:
 1. professor_1.txt — RateMyProfessors (Jeremy Blackstone, Computer Science / Electrical Engineering and Computer Science)
@@ -86,7 +86,7 @@ retrievable content, so the retriever has nothing to anchor on:
 Now **with** memory. The follow-up is rewritten first:
 
 ```text
-Original follow-up:  How are his exams structured?
+Original follow-up:       How are his exams structured?
 Rewritten for retrieval:  How are Jeremy Blackstone's exams structured?
 ```
 
@@ -101,7 +101,7 @@ Retrieved after rewriting:
 | 5 | `professor_2::review_1` | professor_2.txt |
 
 ```text
-The reviewer who described Professor Jeremy Blackstone as “the most simplistic and straightforward professor” said that his exams are formatted the same way as the homework assignments—i.e., they follow the same structure and style as the regular coursework assignments posted at the start of the term【professor_1::review_1】.
+The reviewer notes that Professor Blackstone’s exams are designed to mirror the homework assignments – they follow the same structure and format as the homework problems. [professor_1::review_1]
 
 Sources:
 1. professor_1.txt — RateMyProfessors (Jeremy Blackstone, Computer Science / Electrical Engineering and Computer Science)

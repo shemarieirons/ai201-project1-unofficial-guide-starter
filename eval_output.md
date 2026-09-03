@@ -98,17 +98,13 @@ Text: Warns other students to show up to class, saying no real content was taugh
 ### Generated Answer
 
 ```text
-Students’ comments about Jiang Li’s grading and exams are consistently negative.  
+Students’ reviews of Professor Jiang Li repeatedly describe his grading as strict and opaque, and they note that the exams often do not reflect the material covered in lectures.
 
-* One reviewer says the professor “drains your GPA,” offers no extra‑credit opportunities, and can make unilateral decisions about cheating – even requiring a student to “interview” to justify a project grade【professor_2::review_5】.  
-* Another reviewer calls him “one of the worst professors,” noting that he refuses to clarify concepts and accuses students of cheating when their understanding seems insufficient【professor_2::review_6】.  
+* **Grading practices** – Reviewers say the professor “drains your GPA,” offers no extra‑credit opportunities, and makes unilateral decisions about whether a student cheated, even requiring students to “interview” to justify a project grade [professor_2::review_5]. Another reviewer calls him “one of the worst professors,” accusing him of ridiculing students who don’t understand and of labeling projects as cheating when the reviewer’s understanding isn’t deemed sufficient [professor_2::review_6]. One student notes that MIPS programming projects are graded by an automated script [professor_2::review_1].
 
-Regarding the exams themselves:  
+* **Exams** – According to a review, the exams are essentially the same as the online homework (same style of questions but with different numbers), so the test format mirrors the homework rather than the lecture material [professor_2::review_1]. Another reviewer points out that homework counts for a larger portion of the final grade than the exams, and that the lecture content does not cover what is actually tested [professor_2::review_7].
 
-* A student describes the exams as essentially the same format as the online homework (same style of questions, just different numbers), and notes that the homework assignments can take many hours to complete【professor_2::review_1】.  
-* Another reviewer points out that homework counts for a larger portion of the final grade than the exams, and that lecture content often does not cover what is actually tested【professor_2::review_7】.  
-
-Overall, students report that Jiang Li’s grading is perceived as harsh and that the exams closely mirror the difficult homework assignments, with a heavy emphasis on homework in the final grade.
+Overall, students characterize Jiang Li’s grading as harsh, with little flexibility or extra credit, and they feel that the exams are heavily based on homework problems and do not align well with what is taught in class.
 ```
 
 ### Source List
@@ -213,7 +209,7 @@ Text: Calls him fantastic, always willing to review assignments before they're d
 ### Generated Answer
 
 ```text
-Students who have reviewed Jeremy Blackstone describe him very positively. One reviewer calls him “the best computer‑science professor” they have had, saying he “genuinely wants students to learn” and “sets them up for their career beyond Howard.” The reviewer adds that they “couldn’t ask for a better professor.” The review also notes that his class emphasizes participation, offers extra credit, and has clear grading criteria【professor_1::review_2】.
+Students who have reviewed Jeremy Blackstone on RateMyProfessors describe him very positively. One reviewer calls him “the best computer science professor” they have had, saying he “genuinely wants students to learn and sets them up for their career beyond Howard.” The reviewer adds that they “couldn’t ask for a better professor.” The review also notes that his classes emphasize participation, offer extra credit, and have clear grading criteria【professor_1::review_2】.
 ```
 
 ### Source List
@@ -329,15 +325,15 @@ Text: Reports that her quizzes and tests sometimes contain mistakes, or question
 ```text
 Students have reported several recurring problems with Howard’s course‑registration process:
 
-* **Delays and difficulty securing needed seats** – Senior Joshua Wallington said the spring registration was “significantly stressful” because it had become hard to enroll in the classes he needs to graduate.  Many students said they have to keep refreshing the registration website and receive no notification when new seats open, making it easy to miss openings [hilltop_article_1::chunk_1].
+* **Delays and difficulty securing needed seats** – Students say the registration system often lags, forcing them to “continuously refresh the registration website to catch newly added course sections” because they receive no notification when seats open up. This creates significant stress and can jeopardize timely graduation【hilltop_article_1::chunk_1】.  
 
-* **Unclear communication and fear of delayed graduation** – Senior broadcast‑journalism major Reinah McNeil expressed frustration that the process was poorly communicated, adding stress and the possibility of a delayed graduation.  She called for clearer information from the administration [hilltop_article_1::chunk_1].
+* **Unclear communication from the university** – Some students have asked for clearer, more timely information from administration about how registration works and when openings might occur, indicating that current communications are insufficient【hilltop_article_1::chunk_1】.  
 
-* **Advisor‑related obstacles** – In a separate article, a student named Fleming described how a lack of response from faculty advisors, and being redirected to an advisor who was no longer employed at Howard, caused her registration to take “so long.”  This lack of timely advising contributed to registration bottlenecks [hilltop_article_3::chunk_1].
+* **Advisor availability issues** – A student reported that a lack of response from faculty advisors, and being redirected to an advisor who was no longer employed, caused her registration to take “so long”【hilltop_article_3::chunk_1】.  
 
-* **Impact of rising enrollment** – The College of Arts and Sciences has seen enrollment rise to nearly 4,000 students, which has strained capacity, led to larger class sizes, and made it harder for students to find available seats in required courses [hilltop_article_3::chunk_1].
+* **Impact of rising enrollment** – The College of Arts and Sciences has seen a sharp increase in student numbers, which has strained the system and contributed to longer registration times and larger class sizes, indirectly affecting students’ ability to register for desired courses【hilltop_article_3::chunk_1】.  
 
-Together, these issues—website delays, missing notifications, insufficient advisor support, and pressure from growing enrollment—create a stressful registration experience for many Howard students.
+Together, these issues—system delays, poor notification, insufficient guidance, and advisor shortages—have made the registration experience stressful and, for some, a potential barrier to graduating on schedule.
 ```
 
 ### Source List
@@ -444,9 +440,9 @@ Text: States she was always available, was very helpful whenever the reviewer re
 ### Generated Answer
 
 ```text
-The student reviews of Professor Gloria Washington are mixed rather than consistent. One review describes her quizzes and tests as sometimes containing mistakes and notes that she can be very strict about exact answers, warning that class‑skipping or offending her makes the situation worse【professor_3::review_1】. Another review calls her “a great teacher overall,” mentions that her pop quizzes are predictable and not especially hard, and praises the extra‑credit opportunities she provides【professor_3::review_2】.  
+The student reviews of Professor Gloria Washington are mixed rather than consistent. One review describes her quizzes and tests as sometimes containing mistakes and notes that she marks answers wrong unless they match her exact interpretation, warning that class‑skipping or offending her can make grading harsher【professor_3::review_1】. Another review calls her “a great teacher overall,” says her pop quizzes are predictable and not especially hard, and praises the extra‑credit opportunities she provides【professor_3::review_2】.  
 
-Thus, students express differing opinions about her teaching style and grading, indicating that the sentiment is not uniform.
+Thus, students express both negative and positive opinions, indicating a lack of consensus about her teaching.
 ```
 
 ### Source List
